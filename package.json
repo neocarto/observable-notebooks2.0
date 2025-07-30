@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@observablehq/notebook-kit": "^1.0.1",
+    "geotoolbox": "^3.0.4",
+    "geoviz": "^0.7.12"
+  },
+  "scripts": {
+    "docs:preview": "notebooks preview --root docs",
+    "docs:build": "notebooks build --root docs -- docs/*.html"
+  }
+}
