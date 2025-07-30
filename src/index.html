@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<notebook>
+  <title>Some experiments with Observable Notebooks 2.0</title>
+
+  <script type="text/markdown">
+    # Observable Notebooks 2.0
+
+    ## Some experiments with `geoviz` and `geotoolbox`
+  </script>
+
+  <script id="intro" type="text/markdown">
+    ### A data set
+  </script>
+
+  <script type="module" pinned>
+    let world = FileAttachment("world.json").json();
+  </script>
+
+  <script id="intro" type="text/markdown">
+    Let's see what's inside.
+  </script>
+
+  <script id="imports" type="module">
+    display(world);
+  </script>
+
+  <script type="text/markdown">
+    # 1 - `geoviz`
+
+    [`geoviz`](https://riatelab.github.io/geoviz/) is a JavaScript library for designing thematic maps. The library
+    provides a set of d3 compatible functions that you can mix with the usual d3
+    syntax. The library is designed to be intuitive and concise.
+
+    Source: https://github.com/riatelab/geoviz<br/>
+    Documentation: https://riatelab.github.io/geoviz/
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const geoviz = await import("geoviz");
+  </script>
+
+  <script type="text/markdown">
+    ### An simple map
+  </script>
+
+  <script id="simple map" type="module" pinned>
+    {
+      let svg = geoviz.create({
+        projection: "NaturalEarth1",
+        zoomable: true,
+      });
+      svg.plot({ type: "outline" });
+      svg.plot({ type: "graticule", stroke: "white" });
+      svg.plot({ data: world, fill: "#38896F", tip: true });
+      svg.plot({ type: "header", text: "Hello geoviz" });
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    ### Typology
+  </script>
+
+  <script id="typo" type="module" pinned>
+    {
+      let svg = geoviz.create({
+        projection: "Hill",
+        zoomable: true,
+      });
+      svg.plot({ type: "outline" });
+      svg.plot({ type: "graticule", stroke: "white" });
+      svg.plot({ type: "typo", data: world, var: "region", tip: true });
+      svg.plot({ type: "header", text: "Hello geoviz" });
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    ### Choropleth
+  </script>
+
+  <script id="choro" type="module" pinned>
+    {
+      let svg = geoviz.create({
+        projection: "InterruptedHomolosine",
+        zoomable: true,
+      });
+      svg.plot({ type: "outline" });
+      svg.plot({ type: "graticule", stroke: "white" });
+      svg.plot({
+        type: "choro",
+        data: world,
+        var: "gdppc",
+        tip: true,
+        leg_type: "horizontal",
+        leg_title: "GDP per capita",
+        leg_pos: [0, 360],
+      });
+      svg.plot({ type: "header", text: "Hello geoviz" });
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    ### Proportional symbols
+  </script>
+
+  <script type="module">
+    const k = view(Inputs.range([0, 100], { label: "radius", step: 1 }));
+    const symbol = view(
+      Inputs.select(["circle", "square"], {
+        label: "symbol",
+        value: "circle",
+      })
+    );
+  </script>
+
+  <script type="module" pinned>
+    {
+      let svg = geoviz.create({
+        projection: "PolyhedralWaterman",
+      });
+      svg.plot({ type: "outline" });
+      svg.plot({ type: "graticule", stroke: "white" });
+      svg.plot({ datum: world, fill: "white", fillOpacity: 0.3 });
+      svg.plot({
+        type: "prop",
+        data: world,
+        k,
+        symbol,
+        var: "pop",
+        fill: "#38896F",
+        tip: true,
+      });
+      svg.plot({ type: "header", text: "Hello geoviz" });
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    ### Combination of both
+  </script>
+
+  <script type="module" pinned>
+    {
+      let svg = geoviz.create({
+        projection: "Loximuthal",
+      });
+      svg.plot({ type: "outline" });
+      svg.plot({ type: "graticule", stroke: "white" });
+      svg.plot({ datum: world, fill: "white", fillOpacity: 0.3 });
+      svg.plot({
+        type: "propchoro",
+        data: world,
+        var1: "pop",
+        var2: "gdppc",
+        colors: "PinkYl",
+        tip: true,
+      });
+      svg.plot({ type: "header", text: "Hello geoviz" });
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    ### Another nice example with tiles
+  </script>
+
+  <script type="module">
+    const africa = geoviz.tool.featurecollection(
+      world.features.filter((d) => d.properties.region == "Africa")
+    );
+  </script>
+
+  <script type="module">
+    {
+      // Container
+      const svg = geoviz.create({
+        zoomable: true,
+        projection: "mercator",
+        domain: africa,
+        margin: 20,
+        width: 800,
+      });
+
+      // Choro clasification
+      const data = africa.features.map((d) => d.properties.gdppc);
+      const choro = geoviz.tool.choro(data, {
+        method: "quantile",
+        nb: 6,
+        precision: 0,
+        colors: "BluGrn",
+      });
+
+      // Tiles
+      svg.tile({ url: "worldphysical" });
+
+      // Header
+      svg.header({
+        text: "Hello Geoviz",
+        background_fill: "#38896F",
+        fill: "white",
+        fontSize: 30,
+      });
+
+      // Graticule
+
+      svg.graticule({
+        stroke: "black",
+        strokeWidth: 1.5,
+        strokeOpacity: 0.3,
+        strokeDasharray: 5,
+        transform: "translate(1,1)",
+      });
+
+      svg.graticule({
+        stroke: "white",
+        strokeWidth: 1.5,
+        strokeOpacity: 0.5,
+        strokeDasharray: 5,
+      });
+
+      // Countries
+      svg.path({
+        data: africa,
+        fill: (d) => choro.colorize(d.properties.gdppc),
+        tip: "$NAMEen\n\nGDP per capita: $gdppc\nPopulation:$pop",
+        fillOpacity: 0.8,
+        stroke: "none",
+        filter: svg.effect.shadow({}),
+      });
+
+      // Countries
+      svg.circle({
+        data: africa,
+        r: "pop",
+        stroke: "white",
+        strokeWidth: 1.3,
+        fill: "none",
+      });
+
+      // Sclaleber & North
+      svg.scalebar();
+      svg.north({ scale: 1.5, pos: [663, 155], fill: "#38896F" });
+
+      // Legend
+      svg.legend.choro_vertical({
+        pos: [40, 390],
+        ...choro,
+        title: "GDP per Capita",
+        frame: true,
+        frame_stroke: "none",
+      });
+
+      svg.legend.circles_nested({
+        pos: [40, 575],
+        data: world.features.map((d) => d.properties.pop),
+        title: "Population",
+        frame: true,
+        frame_stroke: "none",
+      });
+
+      // Render
+      display(svg.render());
+    }
+  </script>
+
+  <script type="text/markdown">
+    # 1 - `geotoolbox`
+
+    [geotoolbox](https://github.com/riatelab/geotoolbox) is a javascript tool for geographers. It allows one to manage GeoJSON properties (attribute data) and provides several useful GIS operations for thematic cartography. The aim of geotoolbox is to offer functions designed to handle geoJSON directly, not just single features or geometries. As a result, the library is particularly user-friendly for users with little experience of javascript development. From a technical point of view, geotoolbox is largely based on geos-wasm GIS operators (a big thanks to Christoph Pahmeyer 🙏), but also on d3.geo and topojson. Geotoolbox also works well with other cartographic libraries such as geoviz and bertin.js. Note that there are other GIS libraries like turf.js, which is really great.
+
+    Source: https://github.com/riatelab/geotoolbox<br/>
+    Documentation: https://riatelab.github.io/geotoolbox/
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const geo = await import("geotoolbox");
+  </script>
+
+  <script type="text/markdown">
+    ### Union
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const merge = geo.union(world, { id: "region" });
+  </script>
+
+  <script id="imports" type="module">
+    display(
+      geoviz.draw({
+        layers: [
+          { datum: world, fill: "#CCC", stroke: "none" },
+          {
+            data: merge,
+            stroke: "red",
+            strokeWidth: 1.1,
+            fill: "red",
+            fillOpacity: 0.05,
+          },
+        ],
+      })
+    );
+  </script>
+
+  <script type="text/markdown">
+    ### Simplify
+  </script>
+
+  <script id="imports" type="module">
+    const k_simpl = view(
+      Inputs.range([0.01, 0.5], { label: "k_simpl", step: 0.01, value: 0.05 })
+    );
+  </script>
+
+  <script type="module" pinned>
+    const simple = geo.simplify(world, { k: k_simpl });
+  </script>
+
+  <script type="module">
+    display(
+      geoviz.draw({
+        layers: [
+          { datum: world, fill: "#CCC", stroke: "none" },
+          {
+            data: simple,
+            stroke: "red",
+            strokeWidth: 1.1,
+            fill: "red",
+            fillOpacity: 0.05,
+          },
+        ],
+      })
+    );
+  </script>
+
+  <script type="text/markdown">
+    ### Buffer
+  </script>
+
+  <script type="module">
+    const distance = view(
+      Inputs.range([0, 5000], {
+        label: "Distance (km)",
+        value: 300,
+        step: 100,
+      })
+    );
+  </script>
+
+  <script type="module" pinned>
+    const buffer = geo.buffer(africa, {
+      dist: distance,
+      each: true,
+    });
+  </script>
+
+  <script id="imports" type="module">
+    display(
+      geoviz.draw({
+        layers: [
+          {
+            datum: world,
+            strokeWidth: 1.1,
+            fill: "blue",
+            fillOpacity: 0.2,
+          },
+          { datum: buffer, fill: "none", stroke: "red" },
+        ],
+      })
+    );
+  </script>
+
+  <script type="text/markdown">
+    ### Clip
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const chn = geo.filter(world, { func: "ISO3 = CHN" });
+    const ind = geo.filter(world, { func: "ISO3 = IND" });
+  </script>
+
+  <script id="imports" type="module">
+    const dist2 = view(
+      Inputs.range([0, 3000], {
+        label: "Distance (km)",
+        value: 0,
+        step: 100,
+      })
+    );
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const buff_chn = geo.buffer(chn, { dist: dist2 });
+    const buff_ind = geo.buffer(ind, { dist: dist2 });
+  </script>
+
+  <script id="imports" type="module" pinned>
+    const clipped = geo.clip(buff_chn, { clip: buff_ind });
+  </script>
+
+  <script type="module">
+    display(
+      geoviz.draw({
+        params: { domain: [buff_chn, buff_ind], margin: 75, width: 600 },
+        layers: [
+          { datum: world, fill: "#CCC", stroke: "none" },
+          {
+            data: buff_chn,
+            stroke: "white",
+            fill: "#4a4a4a",
+          },
+          {
+            data: buff_ind,
+            stroke: "white",
+            fill: "#4a4a4a",
+          },
+          {
+            data: clipped,
+            stroke: "yellow",
+            fill: "red",
+          },
+        ],
+      })
+    );
+  </script>
+
+  <script type="text/markdown">
+    # Conclusion
+
+    - Notebooks 2.0 works perfectly!
+    - You can now work offline.
+    - Notebooks can be hosted and deployed wherever you want.
+    - Actually, it's really great !!!
+
+    But
+
+    - Observable Notebooks 1.0 (on the plateform) remain extremely important for sharing your work and building a community around data visualization.
+  </script>
+</notebook>

@@ -5,7 +5,9 @@
     "geoviz": "^0.7.12"
   },
   "scripts": {
-    "docs:preview": "notebooks preview --root docs",
-    "docs:build": "notebooks build --root docs -- docs/*.html"
+    "preview": "notebooks preview --root src",
+    "build": "notebooks build --root src -- src/*.html && rm -rf docs && mkdir docs && cp -r src/.observable/dist/* docs/ && rm -rf src/.observable"
+
+
   }
 }
