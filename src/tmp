@@ -1,0 +1,123 @@
+<!-- <!DOCTYPE html>
+<notebook>
+  <title>Test R data loaders</title>
+
+  <script type="text/markdown">
+    # R data loader
+  </script>
+
+  <!-- <script type="text/x-r">
+    library(mapsf)
+    # Import the sample dataset
+    mtq <- mf_get_mtq()
+    # Plot the base map
+    mf_map(x = mtq)
+    # Plot proportional symbols
+    mf_map(x = mtq, var = "POP", type = "prop", leg_pos = "topright")
+    # Plot a map layout
+    mf_layout(
+      title = "Population in Martinique",
+      credits = "T. Giraud; Sources: INSEE & IGN, 2018"
+    )
+  </script> -->
+
+  Exemple de data loader R. Carte réalisée avec mapsf.
+
+  <script type="text/x-r" pinned hidden>
+    library(mapsf)
+    png("plot.png", width = 800, height = 600)
+    mtq <- mf_get_mtq()
+    mf_map(x = mtq)
+    mf_map(x = mtq, var = "POP", type = "prop", leg_pos = "topright")
+    mf_layout(
+      title = "Population in Martinique",
+      credits = "T. Giraud; Sources: INSEE & IGN, 2018"
+    )
+    dev.off()
+  </script>
+
+  <script type="module" pinned>
+    display(await FileAttachment("plot.png").image());
+  </script>
+
+  Essai avec un csv
+
+  <script type="text/x-r">
+    cities <- read.csv("capitalcities.csv")
+    cities_CHN <- citines[cities$ISO3 == "CHN", ]
+    write.csv(cities_CHN, "cities_CHN.csv", row.names = FALSE)
+  </script>
+
+  <script type="module" pinned>
+    let data = FileAttachment("cities_CHN.csv").csv();
+  </script>
+
+  <script type="module">
+    display(Inputs.table(data));
+  </script>
+
+  Chargement d'un géopackage avec R.
+
+  <script type="text/x-r">
+     library(sf)
+     AFG <- st_read("afghanistan.gpkg")
+    st_write(AFG, file = "afghanistan.geojson")
+  </script>
+
+  <!-- 
+  <script type="text/x-r">
+    capitals <- read.csv("capitalcities.csv")
+    capitals
+  </script>
+
+  <!-- <script type="text/x-r">
+    x <- 1:10
+    y <- x^2
+    plot(x, y, type = "l", col = "blue", lwd = 2,
+         main = "Exemple de graphique minimal",
+         xlab = "x", ylab = "y = x²")
+  </script> -->
+  -->
+
+  <script type="application/vnd.node.javascript" output="coucou">
+    async function getNpmDownloads(name, {end, start}) {
+      const data = [];
+      for (let d1 = end, d2; d1 > start; ) {
+        d2 = d1;
+        d1 = addDate(d1, -365); // fetch a year at a time
+        if (d1 < start) d1 = start;
+        const response = await fetch(`https://api.npmjs.org/downloads/range/${formatDate(d1)}:${formatDate(addDate(d2, -1))}/${encodeURIComponent(name)}`);
+        if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+        const {downloads} = await response.json();
+        for (const {downloads: value, day: date} of downloads.reverse()) {
+          data.push({date: new Date(date), value});
+        }
+      }
+      for (let i = data.length - 1; i >= 0; --i) {
+        if (data[i].value > 0) {
+          return data.slice(data[0].value > 0 ? 0 : 1, i + 1); // ignore npm reporting zero for today
+        }
+      }
+      throw new Error("no data found");
+    }
+
+    function formatDate(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function addDate(date, n) {
+      date = new Date(+date);
+      date.setDate(date.getDate() + n);
+      return date;
+    }
+
+    process.stdout.write(
+      JSON.stringify(
+        await getNpmDownloads("@observablehq/plot", {
+          start: new Date("2022-09-01"),
+          end: new Date("2025-09-01")
+        })
+      )
+    );
+  </script>
+</notebook> -->

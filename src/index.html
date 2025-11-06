@@ -5,7 +5,7 @@
   <script type="text/markdown">
     # Observable Notebooks 2.0
 
-    ## Some experiments with `geoviz` and `geotoolbox`
+    ## Some experiments...
   </script>
 
   <script id="intro" type="text/markdown">
@@ -266,7 +266,7 @@
   </script>
 
   <script type="text/markdown">
-    # 1 - `geotoolbox`
+    # 2 - `geotoolbox`
 
     [geotoolbox](https://github.com/riatelab/geotoolbox) is a javascript tool for geographers. It allows one to manage GeoJSON properties (attribute data) and provides several useful GIS operations for thematic cartography. The aim of geotoolbox is to offer functions designed to handle geoJSON directly, not just single features or geometries. As a result, the library is particularly user-friendly for users with little experience of javascript development. From a technical point of view, geotoolbox is largely based on geos-wasm GIS operators (a big thanks to Christoph Pahmeyer 🙏), but also on d3.geo and topojson. Geotoolbox also works well with other cartographic libraries such as geoviz and bertin.js. Note that there are other GIS libraries like turf.js, which is really great.
 
@@ -423,6 +423,37 @@
         ],
       })
     );
+  </script>
+
+  <script type="text/markdown">
+    # 3 - `R data loaders`
+
+    Since notebooks 1.5, it is possible to execute R code during build time. This is very convenient. It allows you to combine data preparation (in R) and data representation (in JS) in the same document.
+  </script>
+
+  <script type="text/x-r" pinned hidden>
+    source("../R/script1.R")
+  </script>
+
+  <script type="module" pinned>
+    let data = await FileAttachment("../R/cities_CHN.csv").csv();
+  </script>
+
+  <script type="module">
+    display(Inputs.table(data));
+  </script>
+
+  <script type="text/markdown">
+    # Conclusion
+
+    - Notebooks 2.0 works perfectly!
+    - You can now work offline.
+    - Notebooks can be hosted and deployed wherever you want.
+    - Actually, it's really great !!!
+
+    But
+
+    - Observable Notebooks 1.0 (on the plateform) remain extremely important for sharing your work and building a community around data visualization.
   </script>
 
   <script type="text/markdown">
