@@ -1445,7 +1445,7 @@ p .plot-d6a7b5 {
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
     </style>
-  <meta name="generator" content="Observable Notebook Kit v1.5.0"><title>Some experiments with Observable Notebooks 2.0</title>  <script type="module" crossorigin src="./assets/index-D-xG8rnP.js"></script>
+  <meta name="generator" content="Observable Notebook Kit v1.5.0"><title>Some experiments with Observable Notebooks 2.0</title>  <script type="module" crossorigin src="./assets/index-CJGzlhg5.js"></script>
 </head>
   <body>
     <main><div id="cell-1" class="observablehq observablehq--cell"><div><h1>Observable Notebooks 2.0</h1>
@@ -1564,7 +1564,7 @@ st_write(AFG, dsn = "../R/afghanistan.geojson", driver = "GeoJSON")</code></pre>
 </div></div><div id="cell-53" class="observablehq observablehq--cell"></div><pre data-language="js"><code class="language-js"><span class="tok-keyword">let</span> <span class="tok-definition">afg</span> = <span class="tok-keyword">await</span> <span class="tok-variable">FileAttachment</span>(<span class="tok-string">"../R/afghanistan.geojson"</span>).<span class="tok-definition">json</span>();
 <span class="tok-variable">display</span>(<span class="tok-variable">geoviz</span>.<span class="tok-definition">view</span>(<span class="tok-variable">afg</span>));</code></pre><div id="cell-54" class="observablehq observablehq--cell"><div><p>You can also generate maps with R and display them on your page. Here’s an example using the <code>mapsf</code> package.</p>
 </div></div><div id="cell-55" class="observablehq observablehq--cell"></div><pre data-language="r"><code class="language-r">library(mapsf)
-png("plot.png", width = 800, height = 600)
+png("../R/plot.png", width = 800, height = 600)
 mtq &lt;- mf_get_mtq()
 mf_map(x = mtq)
 mf_map(x = mtq, var = "POP", type = "prop", leg_pos = "topright")
@@ -1572,18 +1572,18 @@ mf_layout(
   title = "Population in Martinique",
   credits = "T. Giraud; Sources: INSEE &amp; IGN, 2018"
 )
-dev.off()</code></pre><div id="cell-56" class="observablehq observablehq--cell"></div><pre data-language="js"><code class="language-js"><span class="tok-variable">display</span>(<span class="tok-keyword">await</span> <span class="tok-variable">FileAttachment</span>(<span class="tok-string">"plot.png"</span>).<span class="tok-definition">image</span>());</code></pre><div id="cell-57" class="observablehq observablehq--cell"><div><h1>Conclusion</h1>
+dev.off()</code></pre><div id="cell-56" class="observablehq observablehq--cell"></div><pre data-language="js"><code class="language-js"><span class="tok-variable">display</span>(<span class="tok-keyword">await</span> <span class="tok-variable">FileAttachment</span>(<span class="tok-string">"../R/plot.png"</span>).<span class="tok-definition">image</span>());</code></pre><div id="cell-57" class="observablehq observablehq--cell"><div><h1>Conclusion</h1>
 <ul>
 <li>Notebooks 2.0 works perfectly!</li>
 <li>You can now work offline.</li>
 <li>Notebooks can be hosted and deployed wherever you want.</li>
-<li>R data loaders allow you to chain together complex data import and handling operations at build time and document the throughput in a single notebook. This is great for traceability and reproducibility.</li>
+<li>R data loaders allow you to chain together complex data import and handling operations at build time and document the process in a single notebook. This is great for traceability and reproducibility.</li>
 </ul>
 <p>But</p>
 <ul>
 <li>Syntax highlighting is missing for R cells.</li>
-<li>An appropriate IDE would be needed to easily add chucks (cells).</li>
-<li>Observable Notebooks 1.0 (on the plateform) remain extremely important for sharing your work and building a community around data visualization.</li>
+<li>An appropriate IDE would be needed to easily add chucks (cells). At this stage, Observable Desktop is only available on Mac OS.</li>
+<li>Observable Notebooks 1.0 (on the web plateform) remain extremely important for sharing your work and building a community around data visualization.</li>
 </ul>
 </div></div></main>
   

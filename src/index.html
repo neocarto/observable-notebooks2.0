@@ -488,7 +488,7 @@
 
   <script type="text/x-r" pinned hidden>
     library(mapsf)
-    png("plot.png", width = 800, height = 600)
+    png("../R/plot.png", width = 800, height = 600)
     mtq <- mf_get_mtq()
     mf_map(x = mtq)
     mf_map(x = mtq, var = "POP", type = "prop", leg_pos = "topright")
@@ -500,7 +500,7 @@
   </script>
 
   <script type="module" pinned>
-    display(await FileAttachment("plot.png").image());
+    display(await FileAttachment("../R/plot.png").image());
   </script>
 
   <script type="text/markdown">
