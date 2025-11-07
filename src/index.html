@@ -5,7 +5,10 @@
   <script type="text/markdown">
     # Observable Notebooks 2.0
 
-    ## Some experiments...
+    ## Some experiments with geoviz, geotoolbox, and the R data loaders...
+  </script>
+  <script type="text/markdown">
+    Source code available on <ins>[GitHub](https://github.com/neocarto/observable-notebooks2.0/blob/main/src/index.html)</ins>.
   </script>
 
   <script id="intro" type="text/markdown">
@@ -431,29 +434,72 @@
     Since notebooks 1.5, it is possible to execute R code during build time. This is very convenient. It allows you to combine data preparation (in R) and data representation (in JS) in the same document.
   </script>
 
+  <script type="text/markdown">
+    **The R code is executed at build time. The JavaScript code is executed on the fly when the page is opened.**
+  </script>
+
+  <script type="text/markdown">
+    You can write the R code directly in a R cell, or, to benefit from syntax highlighting, in a sourced R file.
+  </script>
+
+  <script type="text/markdown">
+    In this [R script](https://github.com/neocarto/observable-notebooks2.0/blob/main/R/script1.R), I open a CSV file, filter it, and save it again as a CSV.
+  </script>
+
   <script type="text/x-r" pinned hidden>
     source("../R/script1.R")
   </script>
 
-  <script type="module" pinned>
-    let data = await FileAttachment("../R/cities_CHN.csv").csv();
+  <script type="text/markdown">
+    Then, I display it in Observable JavaScript.
   </script>
 
-  <script type="module">
+  <script type="module" pinned>
+    let data = FileAttachment("../R/cities_CHN.csv").csv();
+  </script>
+
+  <script type="module" pinned>
     display(Inputs.table(data));
   </script>
 
   <script type="text/markdown">
-    # Conclusion
+    Now, let’s load a geopackage using the `sf` package.
+  </script>
 
-    - Notebooks 2.0 works perfectly!
-    - You can now work offline.
-    - Notebooks can be hosted and deployed wherever you want.
-    - Actually, it's really great !!!
+  <script type="text/x-r" pinned hidden>
+    library(sf)
+    AFG <- st_read("../R/afghanistan.gpkg")
+    st_write(AFG, dsn = "../R/afghanistan.geojson", driver = "GeoJSON")
+  </script>
 
-    But
+  <script type="text/markdown">
+    Then, we can display it using geoviz.
+  </script>
 
-    - Observable Notebooks 1.0 (on the plateform) remain extremely important for sharing your work and building a community around data visualization.
+  <script type="module" pinned>
+    let afg = await FileAttachment("../R/afghanistan.geojson").json();
+    display(geoviz.view(afg));
+  </script>
+
+  <script type="text/markdown">
+    You can also generate maps with R and display them on your page. Here’s an example using the `mapsf` package.
+  </script>
+
+  <script type="text/x-r" pinned hidden>
+    library(mapsf)
+    png("plot.png", width = 800, height = 600)
+    mtq <- mf_get_mtq()
+    mf_map(x = mtq)
+    mf_map(x = mtq, var = "POP", type = "prop", leg_pos = "topright")
+    mf_layout(
+      title = "Population in Martinique",
+      credits = "T. Giraud; Sources: INSEE & IGN, 2018"
+    )
+    dev.off()
+  </script>
+
+  <script type="module" pinned>
+    display(await FileAttachment("plot.png").image());
   </script>
 
   <script type="text/markdown">
@@ -462,10 +508,12 @@
     - Notebooks 2.0 works perfectly!
     - You can now work offline.
     - Notebooks can be hosted and deployed wherever you want.
-    - Actually, it's really great !!!
+    - R data loaders allow you to chain together complex data import and handling operations at build time and document the throughput in a single notebook. This is great for traceability and reproducibility.
 
     But
 
+    - Syntax highlighting is missing for R cells.
+    - An appropriate IDE would be needed to easily add chucks (cells).
     - Observable Notebooks 1.0 (on the plateform) remain extremely important for sharing your work and building a community around data visualization.
   </script>
 </notebook>
